@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_PASSWORD: geofiscal
+      POSTGRES_USER: geofiscal
+      POSTGRES_DB: geofiscal
+    ports: ["5432:5432"]
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+  backend:
+    build: ./backend
+    ports: ["8000:8000"]
+    depends_on: [db, redis]
+  frontend:
+    image: node:20
+    working_dir: /app
+    command: sh -c "npm i && npm run dev -- --host 0.0.0.0 --port 3000"
+    volumes:
+      - ./frontend:/app
+    ports: ["3000:3000"]
+    depends_on: [backend]
